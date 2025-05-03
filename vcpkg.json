@@ -1,3 +1,9 @@
 {
-  "dependencies": []
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "dependencies": [
+    {
+      "name": "sdl3",
+      "version>=": "3.2.10"
+    }
+  ]
 }
