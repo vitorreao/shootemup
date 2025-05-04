@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     (void)argv;
     AppContext app = CreateAppContext();
     InitApp(app);
+    AttachResourceArchive(app, "assets.dat");
     CleanUpApp(app);
     return 0;
 }
