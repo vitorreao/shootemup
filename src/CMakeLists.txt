@@ -7,6 +7,8 @@ create_zip(assets
 )
 
 add_executable(Shootemup
+  "app.c"
+  "app.h"
   "asset.c"
   "asset.h"
   "main.c"

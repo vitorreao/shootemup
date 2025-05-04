@@ -45,7 +45,7 @@ bool initApp(App *app)
         SDL_Quit();
         return false;
     }
-    if (!openAssetArchive(ASSETS_FILEPATH)) {
+    if (!OpenAssetArchive(ASSETS_FILEPATH)) {
         fprintf(stderr, "Couldn't open assets file\n");
         SDL_DestroyWindow(app->window);
         SDL_Quit();

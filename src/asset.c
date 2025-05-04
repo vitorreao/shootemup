@@ -10,7 +10,7 @@ const size_t COPY_BUFFER_SIZE = 256;
 
 zip_t *za = NULL;
 
-bool openAssetArchive(const char *asset_archive_path)
+bool OpenAssetArchive(const char *asset_archive_path)
 {
     int err;
     if ((za = zip_open(asset_archive_path, ZIP_RDONLY, &err)) == NULL) {
