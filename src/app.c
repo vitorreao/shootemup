@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 
 #include <SDL3/SDL.h>
@@ -5,18 +6,7 @@
 #include "app.h"
 #include "asset.h"
 
-const char *ASSETS_FILEPATH = "assets.dat";
-
-struct _WindowContext {
-    SDL_Renderer *renderer;
-    SDL_Window *window;
-};
-
 struct _AppContext {
-    struct _WindowContext *windows;
-    size_t windowsLength;
-    size_t windowsCapacity;
-
     AppCleanUp *cleanUps;
     size_t cleanUpsLength;
     size_t cleanUpsCapacity;
@@ -30,7 +20,7 @@ static void freeAppContext(AppContext app)
     SDL_free(app);
 }
 
-AppContext CreateAppContext()
+AppContext CreateAppContext(void)
 {
     AppContext app = SDL_malloc(sizeof(struct _AppContext));
     if (app == NULL) {
@@ -66,24 +56,9 @@ void RegisterAppCleanUp(AppContext app, AppCleanUp f)
     app->cleanUpsLength++;
 }
 
-static void reallocWindows(AppContext app)
-{
-    size_t newCapacity = 1;
-    if (app->windowsCapacity > 0) {
-        newCapacity *= app->windowsCapacity * 2;
-    }
-    struct _WindowContext *newWindows = SDL_realloc(
-        app->windows, sizeof(struct _WindowContext) * newCapacity);
-    if (newWindows == NULL) {
-        fprintf(stderr, "Cannot allocate memory for App Window\n");
-        exit(1);
-    }
-    app->windows = newWindows;
-    app->windowsCapacity = newCapacity;
-}
-
 static void quitSDL(AppContext app)
 {
+    (void)app;
     SDL_Quit();
 }
 
@@ -96,17 +71,10 @@ void InitApp(AppContext app)
     RegisterAppCleanUp(app, quitSDL);
 }
 
-void CreateAppWindow(AppContext app, const char *title, int w, int h)
-{
-    if (app->windowsLength >= app->windowsCapacity) {
-        reallocWindows(app);
-    }
-    size_t idx = app->windowsLength;
-    if (idx == 0 && !initSDL(app)) {
 
-    }
-    app->windows[idx].window = SDL_CreateWindow(title, w, h, 0);
-    if (app->windows[idx].window == NULL) {
-        
+void CleanUpApp(AppContext app)
+{
+    for (int i = app->cleanUpsLength - 1; i >= 0; i--) {
+        app->cleanUps[i](app);
     }
 }

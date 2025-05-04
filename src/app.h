@@ -3,9 +3,9 @@
 
 typedef struct _AppContext *AppContext;
 typedef void (*AppCleanUp)(AppContext);
-AppContext CreateAppContext();
+AppContext CreateAppContext(void);
 void InitApp(AppContext app);
 void RegisterAppCleanUp(AppContext app, AppCleanUp f);
-void CreateAppWindow(AppContext app, const char *title, int w, int h);
+void CleanUpApp(AppContext app);
 
 #endif // APP_H
