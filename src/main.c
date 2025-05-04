@@ -3,9 +3,13 @@
 #include <stdlib.h>
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+
+#include "asset.h"
 
 const int SCREEN_WIDTH  = 1280;
 const int SCREEN_HEIGHT = 720;
+const char *ASSETS_FILEPATH = "assets.dat";
 
 typedef struct {
     SDL_Renderer *renderer;
@@ -15,6 +19,7 @@ typedef struct {
 
 bool cleanUpApp(App *app)
 {
+    closeAssetArchive();
     SDL_DestroyRenderer(app->renderer);
     SDL_DestroyWindow(app->window);
     SDL_Quit();
@@ -36,6 +41,12 @@ bool initApp(App *app)
     app->renderer = SDL_CreateRenderer(app->window, NULL);
     if (app->renderer == NULL) {
         fprintf(stderr, "Couldn't create the renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(app->window);
+        SDL_Quit();
+        return false;
+    }
+    if (!openAssetArchive(ASSETS_FILEPATH)) {
+        fprintf(stderr, "Couldn't open assets file\n");
         SDL_DestroyWindow(app->window);
         SDL_Quit();
         return false;
@@ -70,6 +81,23 @@ bool presentScene(App *app)
     return true;
 }
 
+void blit(App *app, SDL_Texture *texture, int x, int y)
+{
+    SDL_FRect srcRect;
+    srcRect.x = 32;
+    srcRect.y = 0;
+    srcRect.w = 16;
+    srcRect.h = 24;
+
+    SDL_FRect destRect;
+    destRect.x = x;
+    destRect.y = y;
+    destRect.w = 16;
+    destRect.h = 24;
+
+    SDL_RenderTexture(app->renderer, texture, &srcRect, &destRect);
+}
+
 int main(int argc, char *argv[])
 {
     (void)argc;
@@ -78,6 +106,7 @@ int main(int argc, char *argv[])
     if (!initApp(&app)) {
         exit(1);
     }
+    SDL_Texture *texture = loadTexture(app.renderer, "sprites/ship.png");
     while (!app.quitRequested) {
         if (!prepareScene(&app)) {
             break;
@@ -85,6 +114,7 @@ int main(int argc, char *argv[])
         if (!handleInput(&app)) {
             break;
         }
+        blit(&app, texture, 100, 100);
         if (!presentScene(&app)) {
             break;
         }
