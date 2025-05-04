@@ -5,16 +5,7 @@
 #include <zip.h>
 
 #include "app.h"
-
-struct _AppContext {
-    AppCleanUp *cleanUps;
-    size_t cleanUpsLength;
-    size_t cleanUpsCapacity;
-
-    zip_t *zipArchive;
-
-    bool quitRequested;
-};
+#include "opaque.h"
 
 static void freeAppContext(AppContext app)
 {
@@ -79,33 +70,4 @@ void CleanUpApp(AppContext app)
     for (int i = app->cleanUpsLength - 1; i >= 0; i--) {
         app->cleanUps[i](app);
     }
-}
-
-static void closeZipArchive(AppContext app)
-{
-    if (app->zipArchive == NULL) {
-        return;
-    }
-    zip_close(app->zipArchive);
-}
-
-bool AttachResourceArchive(AppContext app, const char *filepath)
-{
-    int err;
-    zip_t *za;
-    if ((za = zip_open(filepath, ZIP_RDONLY, &err)) == NULL) {
-        zip_error_t error;
-        zip_error_init_with_code(&error, err);
-        SDL_LogError(
-            SDL_LOG_CATEGORY_APPLICATION,
-            "unzip %s: %s",
-            filepath,
-            zip_error_strerror(&error)
-        );
-        zip_error_fini(&error);
-        return false;
-    }
-    app->zipArchive = za;
-    RegisterAppCleanUp(app, closeZipArchive);
-    return true;
 }
