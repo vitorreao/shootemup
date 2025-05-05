@@ -55,6 +55,15 @@ static void quitSDL(AppContext app)
     SDL_Quit();
 }
 
+static void cleanUpRenders(AppContext app)
+{
+    for (size_t i = 0; i < app->rendersLength; i++) {
+        SDL_DestroyRenderer(app->renders[i].renderer);
+        SDL_DestroyWindow(app->renders[i].window);
+    }
+    SDL_free(app->renders);
+}
+
 void InitApp(AppContext app)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
@@ -62,6 +71,7 @@ void InitApp(AppContext app)
         exit(1);
     }
     RegisterAppCleanUp(app, quitSDL);
+    RegisterAppCleanUp(app, cleanUpRenders);
 }
 
 

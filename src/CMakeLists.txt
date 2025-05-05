@@ -10,6 +10,11 @@ add_executable(Shootemup
   "app.c"
   "app.h"
   "main.c"
+  "opaque.h"
+  "resource.c"
+  "resource.h"
+  "window.c"
+  "window.h"
   ${assets}
 )
 target_compile_options(Shootemup PRIVATE
