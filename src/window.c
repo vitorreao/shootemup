@@ -17,7 +17,7 @@ static void reallocRenders(AppContext app)
     app->rendersCapacity = newCapacity;
 }
 
-void CreateAppWindow(AppContext app, const char *title, int w, int h)
+size_t CreateAppWindow(AppContext app, const char *title, int w, int h)
 {
     if (app->rendersLength >= app->rendersCapacity) {
         reallocRenders(app);
@@ -36,4 +36,5 @@ void CreateAppWindow(AppContext app, const char *title, int w, int h)
     app->renders[idx].window = window;
     app->renders[idx].renderer = renderer;
     app->rendersLength++;
+    return idx;
 }
