@@ -28,7 +28,7 @@ AppContext *CreateAppContext(void)
 
 void RegisterAppCleanUp(AppContext *app, AppCleanUp f)
 {
-    if (!AppendToArray(app->cleanUpsArr, &f)) {
+    if (AppendToArray(app->cleanUpsArr, &f) < 0) {
         fprintf(stderr, "Cannot append App Clean Up function!\n");
         exit(1);
     }
@@ -42,11 +42,12 @@ static void quitSDL(AppContext *app)
 
 static void cleanUpRenders(AppContext *app)
 {
-    for (size_t i = 0; i < app->rendersLength; i++) {
-        SDL_DestroyRenderer(app->renders[i].renderer);
-        SDL_DestroyWindow(app->renders[i].window);
+    for (size_t i = 0; i < GetArrayLength(app->renderCtxArr); i++) {
+        struct RenderContext *ctx = (struct RenderContext *)GetArrayElem(app->renderCtxArr, i);
+        SDL_DestroyRenderer(ctx->renderer);
+        SDL_DestroyWindow(ctx->window);
     }
-    SDL_free(app->renders);
+    DestroyArray(app->renderCtxArr);
 }
 
 void InitApp(AppContext *app)
@@ -55,6 +56,7 @@ void InitApp(AppContext *app)
         fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }
+    app->renderCtxArr = CreateArray(sizeof(struct RenderContext), 1);
     RegisterAppCleanUp(app, quitSDL);
     RegisterAppCleanUp(app, cleanUpRenders);
 }

@@ -9,20 +9,15 @@
 #include "app.h"
 #include "array.h"
 
-struct _RenderContext {
+struct RenderContext {
     SDL_Window *window;
     SDL_Renderer *renderer;
 };
 
 struct AppContext {
-    struct _RenderContext *renders;
-    size_t rendersLength;
-    size_t rendersCapacity;
-
+    Array *renderCtxArr;
     Array *cleanUpsArr;
-
     zip_t *zipArchive;
-
     bool quitRequested;
 };
 

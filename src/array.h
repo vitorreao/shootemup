@@ -7,7 +7,7 @@ typedef struct Array Array;
 
 Array *CreateArray(size_t itemSize, size_t capacity);
 void DestroyArray(Array *arr);
-bool AppendToArray(Array *arr, void *elem);
+int AppendToArray(Array *arr, void *elem);
 size_t GetArrayLength(Array *arr);
 void *GetArrayElem(Array *arr, int idx);
 

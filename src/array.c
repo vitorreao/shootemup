@@ -50,19 +50,19 @@ bool reallocArray(Array *arr)
     return true;
 }
 
-bool AppendToArray(Array *arr, void *elem)
+int AppendToArray(Array *arr, void *elem)
 {
     if (arr == NULL) {
-        return false;
+        return -1;
     }
     if (arr->length >= arr->capacity && !reallocArray(arr)) {
-        return false;
+        return -1;
     }
     size_t idx = arr->length;
     char *ptr = (char *)arr->userData;
     SDL_memcpy(ptr + (idx * arr->itemSize), elem, arr->itemSize);
     arr->length++;
-    return true;
+    return idx;
 }
 
 size_t GetArrayLength(Array *arr)
