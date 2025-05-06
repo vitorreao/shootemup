@@ -1,7 +1,7 @@
 #include "opaque.h"
 #include "window.h"
 
-static void reallocRenders(AppContext app)
+static void reallocRenders(AppContext *app)
 {
     size_t newCapacity = 1;
     if (app->rendersCapacity > 0) {
@@ -17,7 +17,7 @@ static void reallocRenders(AppContext app)
     app->rendersCapacity = newCapacity;
 }
 
-size_t CreateAppWindow(AppContext app, const char *title, int w, int h)
+size_t CreateAppWindow(AppContext *app, const char *title, int w, int h)
 {
     if (app->rendersLength >= app->rendersCapacity) {
         reallocRenders(app);

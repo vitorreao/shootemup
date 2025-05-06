@@ -6,7 +6,7 @@
 #include "opaque.h"
 #include "resource.h"
 
-static void closeZipArchive(AppContext app)
+static void closeZipArchive(AppContext *app)
 {
     if (app->zipArchive == NULL) {
         return;
@@ -14,7 +14,7 @@ static void closeZipArchive(AppContext app)
     zip_close(app->zipArchive);
 }
 
-bool AttachResourceArchive(AppContext app, const char *filepath)
+bool AttachResourceArchive(AppContext *app, const char *filepath)
 {
     int err;
     zip_t *za;

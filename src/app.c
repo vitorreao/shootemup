@@ -7,55 +7,40 @@
 #include "app.h"
 #include "opaque.h"
 
-static void freeAppContext(AppContext app)
+static void freeAppContext(AppContext *app)
 {
-    SDL_free(app->cleanUps);
+    DestroyArray(app->cleanUpsArr);
     SDL_free(app);
 }
 
-AppContext CreateAppContext(void)
+AppContext *CreateAppContext(void)
 {
-    AppContext app = SDL_malloc(sizeof(struct _AppContext));
+    AppContext *app = SDL_malloc(sizeof(struct AppContext));
     if (app == NULL) {
         fprintf(stderr, "Cannot allocate memory for App Context\n");
         exit(1);
     }
-    SDL_memset(app, 0, sizeof(struct _AppContext));
+    SDL_memset(app, 0, sizeof(struct AppContext));
+    app->cleanUpsArr = CreateArray(sizeof(AppCleanUp), 1);
     RegisterAppCleanUp(app, freeAppContext);
     return app;
 }
 
-static void reallocCleanUps(AppContext app)
+void RegisterAppCleanUp(AppContext *app, AppCleanUp f)
 {
-    size_t newCapacity = 1;
-    if (app->cleanUpsCapacity > 0) {
-        newCapacity *= app->cleanUpsCapacity * 2;
-    }
-    AppCleanUp *newCleanUps = SDL_realloc(app->cleanUps, newCapacity * sizeof(AppCleanUp));
-    if (newCleanUps == NULL) {
-        fprintf(stderr, "Cannot allocate memory for App Cleanups\n");
+    if (!AppendToArray(app->cleanUpsArr, &f)) {
+        fprintf(stderr, "Cannot append App Clean Up function!\n");
         exit(1);
     }
-    app->cleanUps = newCleanUps;
-    app->cleanUpsCapacity = newCapacity;
 }
 
-void RegisterAppCleanUp(AppContext app, AppCleanUp f)
-{
-    if (app->cleanUpsLength >= app->cleanUpsCapacity) {
-        reallocCleanUps(app);
-    }
-    app->cleanUps[app->cleanUpsLength] = f;
-    app->cleanUpsLength++;
-}
-
-static void quitSDL(AppContext app)
+static void quitSDL(AppContext *app)
 {
     (void)app;
     SDL_Quit();
 }
 
-static void cleanUpRenders(AppContext app)
+static void cleanUpRenders(AppContext *app)
 {
     for (size_t i = 0; i < app->rendersLength; i++) {
         SDL_DestroyRenderer(app->renders[i].renderer);
@@ -64,7 +49,7 @@ static void cleanUpRenders(AppContext app)
     SDL_free(app->renders);
 }
 
-void InitApp(AppContext app)
+void InitApp(AppContext *app)
 {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
@@ -75,9 +60,10 @@ void InitApp(AppContext app)
 }
 
 
-void CleanUpApp(AppContext app)
+void CleanUpApp(AppContext *app)
 {
-    for (int i = app->cleanUpsLength - 1; i >= 0; i--) {
-        app->cleanUps[i](app);
+    for (int i = GetArrayLength(app->cleanUpsArr) - 1; i >= 0; i--) {
+        AppCleanUp *f = (AppCleanUp *)GetArrayElem(app->cleanUpsArr, i);
+        (*f)(app);
     }
 }

@@ -7,20 +7,19 @@
 #include <zip.h>
 
 #include "app.h"
+#include "array.h"
 
 struct _RenderContext {
     SDL_Window *window;
     SDL_Renderer *renderer;
 };
 
-struct _AppContext {
+struct AppContext {
     struct _RenderContext *renders;
     size_t rendersLength;
     size_t rendersCapacity;
 
-    AppCleanUp *cleanUps;
-    size_t cleanUpsLength;
-    size_t cleanUpsCapacity;
+    Array *cleanUpsArr;
 
     zip_t *zipArchive;
 

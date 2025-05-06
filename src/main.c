@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     (void)argc;
     (void)argv;
-    AppContext app = CreateAppContext();
+    AppContext *app = CreateAppContext();
     InitApp(app);
     AttachResourceArchive(app, "assets.dat");
     CreateAppWindow(app, "Shoot 'em up!", 1280, 720);

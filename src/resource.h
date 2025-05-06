@@ -3,6 +3,6 @@
 
 #include "app.h"
 
-bool AttachResourceArchive(AppContext app, const char *filepath);
+bool AttachResourceArchive(AppContext *app, const char *filepath);
 
 #endif // RESOURCE_H
