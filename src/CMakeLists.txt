@@ -11,6 +11,8 @@ add_executable(Shootemup
   "app.h"
   "array.c"
   "array.h"
+  "list.c"
+  "list.h"
   "main.c"
   "opaque.h"
   "resource.c"
